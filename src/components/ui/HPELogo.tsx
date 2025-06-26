@@ -1,21 +1,21 @@
 import React from "react";
 
 /**
- * HPE solid‑frame logo (transparent centre)
+ * HPE solid-frame logo (transparent center)
  * ----------------------------------------
- * • Uniform 22 % border in HPE Green #01A982
- * • Middle is left transparent so the page’s background shows through
- * • `height` scales everything proportionally
+ * - Uniform 22% border in HPE Green #01A982
+ * - Middle is left transparent so the page's background shows through
+ * - `height` scales everything proportionally
  */
 export interface HPEFrameLogoProps {
-  height?: number;          // overall pixel height (default = 32 px)
+  height?: number; // overall pixel height (default = 32 px)
 }
 
 const HPEFrameLogo: React.FC<HPEFrameLogoProps> = ({ height = 32 }) => {
   /* Intrinsic PNG dimensions and border ratio */
   const VIEW_W = 1521;
   const VIEW_H = 438;
-  const BORDER_RATIO = 96 / 438;        // ≈ 0.22  →  22 %
+  const BORDER_RATIO = 96 / 438; // approx 0.22 -> 22%
 
   const border = VIEW_H * BORDER_RATIO;
 

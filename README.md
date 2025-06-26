@@ -6,8 +6,8 @@ A web application designed to facilitate, record, and report on audit workflows 
 
 - **Frontend:** React with Grommet (HPE Design System)
 - **Database:** Supabase
-- **API:** Vercel Serverless Functions
-- **Hosting:** Vercel
+- **API:** Node.js API deployed as Netlify Functions
+- **Hosting:** Netlify
 
 ## Features
 
@@ -90,13 +90,13 @@ A test record has been added to the database to verify connectivity:
 
 ## Deployment
 
-This project is configured for deployment on Vercel.
+This project is configured for deployment on Netlify at <https://hpedcaudit.netlify.app>.
 
 1. Push your code to GitHub
 
-2. Connect your GitHub repository to Vercel
+2. Connect your GitHub repository to Netlify
 
-3. Configure the following environment variables in Vercel:
+3. Configure the following environment variables in Netlify:
    - `SUPABASE_URL`: Your Supabase project URL
    - `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key
    - `VITE_SUPABASE_URL`: Your Supabase project URL (for frontend)
