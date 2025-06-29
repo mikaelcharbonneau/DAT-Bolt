@@ -1,16 +1,22 @@
-import { Request, Response } from 'express';
+import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import { supabase } from "../db";
 
-export const getInspections = async (req: Request, res: Response) => {
+const httpTrigger: AzureFunction = async (context: Context, req: HttpRequest): Promise<void> => {
   // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Content-Type', 'application/json');
+  context.res = {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Content-Type': 'application/json'
+    }
+  };
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
-    return res.status(200).json({});
+    context.res.status = 200;
+    context.res.body = {};
+    return;
   }
 
   try {
@@ -21,18 +27,24 @@ export const getInspections = async (req: Request, res: Response) => {
       .limit(50);
     
     if (error) {
-      return res.status(500).json({ 
+      context.res.status = 500;
+      context.res.body = { 
         success: false, 
         message: error.message 
-      });
+      };
+      return;
     }
     
-    return res.status(200).json(data || []);
+    context.res.status = 200;
+    context.res.body = data || [];
   } catch (error: any) {
-    console.error('Error fetching inspections:', error);
-    return res.status(500).json({ 
+    context.log.error('Error fetching inspections:', error);
+    context.res.status = 500;
+    context.res.body = { 
       success: false, 
       message: error?.message || 'An unexpected error occurred while fetching inspections'
-    });
+    };
   }
 };
+
+export default httpTrigger;

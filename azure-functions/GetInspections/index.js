@@ -1,68 +1,66 @@
 /**
- * Azure Function: GetInspections (Simplified)
- * Retrieves audit reports - starting with mock data
+ * GetInspections Azure Function - Traditional Model
+ * Returns mock inspection data for testing
  */
-
 module.exports = async function (context, req) {
-    context.log('GetInspections function started');
+    context.log('GetInspections function triggered');
     
     try {
         // Handle CORS preflight
         if (req.method === 'OPTIONS') {
             context.res = {
-                status: 200,
+                status: 204,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-                    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                    'Access-Control-Max-Age': '86400'
                 }
             };
             return;
         }
 
-        // Return mock inspection data for now
+        const corsHeaders = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Content-Type': 'application/json'
+        };
+
+        // Mock inspection data
         const mockInspections = [
             {
-                Id: "1",
-                UserEmail: "test@hpe.com",
-                GeneratedBy: "System",
-                Timestamp: new Date().toISOString(),
-                datacenter: "DC1",
-                datahall: "Hall A",
-                issuesReported: 2,
-                state: "Healthy",
-                walkthroughId: "WT001",
-                userFullName: "Test User"
+                id: 'insp-001',
+                datacenter: 'DC-001',
+                datahall: 'Hall-A',
+                inspector: 'Test User',
+                inspection_date: new Date().toISOString(),
+                status: 'Completed',
+                findings: ['Temperature OK', 'Security Systems Active'],
+                issues_count: 0,
+                state: 'Healthy'
             },
             {
-                Id: "2", 
-                UserEmail: "test@hpe.com",
-                GeneratedBy: "System",
-                Timestamp: new Date(Date.now() - 86400000).toISOString(),
-                datacenter: "DC2",
-                datahall: "Hall B", 
-                issuesReported: 5,
-                state: "Warning",
-                walkthroughId: "WT002",
-                userFullName: "Test User"
+                id: 'insp-002',
+                datacenter: 'DC-001', 
+                datahall: 'Hall-B',
+                inspector: 'Test User',
+                inspection_date: new Date(Date.now() - 24*60*60*1000).toISOString(),
+                status: 'Completed',
+                findings: ['Power fluctuation detected', 'HVAC system needs attention'],
+                issues_count: 2,
+                state: 'Warning'
             }
         ];
 
         context.res = {
             status: 200,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
+            headers: corsHeaders,
             body: JSON.stringify({
                 success: true,
                 data: mockInspections,
-                pagination: {
-                    page: 1,
-                    limit: 20,
-                    total: mockInspections.length
-                },
-                message: 'Inspections retrieved successfully (mock data)'
+                message: 'Inspections retrieved successfully (mock data)',
+                total: mockInspections.length
             })
         };
 
@@ -70,16 +68,17 @@ module.exports = async function (context, req) {
 
     } catch (error) {
         context.log('Error in GetInspections:', error);
+        
         context.res = {
             status: 500,
             headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 success: false,
-                message: 'Failed to retrieve inspections',
-                error: error.message
+                error: 'Internal server error',
+                message: 'An error occurred while retrieving inspections'
             })
         };
     }

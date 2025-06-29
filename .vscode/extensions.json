@@ -1,5 +1,6 @@
 {
-    "recommendations": [
-        "anthropic.claude-code"
-    ]
+  "recommendations": [
+    "ms-azuretools.vscode-azurefunctions",
+    "anthropic.claude-code"
+  ]
 }

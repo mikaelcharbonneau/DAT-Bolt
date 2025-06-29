@@ -167,7 +167,7 @@ resource "azurerm_linux_function_app" "dat_bolt" {
 
   site_config {
     application_stack {
-      node_version = "18"
+      node_version = "20"
     }
     cors {
       allowed_origins = ["*"]  # Will be restricted in production
@@ -177,7 +177,7 @@ resource "azurerm_linux_function_app" "dat_bolt" {
 
   app_settings = {
     "FUNCTIONS_WORKER_RUNTIME" = "node"
-    "WEBSITE_NODE_DEFAULT_VERSION" = "~18"
+    "WEBSITE_NODE_DEFAULT_VERSION" = "~20"
     "AZURE_POSTGRESQL_CONNECTION_STRING" = "@Microsoft.KeyVault(VaultName=${azurerm_key_vault.dat_bolt.name};SecretName=postgresql-connection-string)"
     "JWT_SECRET" = "@Microsoft.KeyVault(VaultName=${azurerm_key_vault.dat_bolt.name};SecretName=jwt-secret)"
   }

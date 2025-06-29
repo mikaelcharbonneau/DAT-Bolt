@@ -1,67 +1,68 @@
-const { v4: uuidv4 } = require('uuid');
-
 /**
- * Azure Function: SubmitInspection (Simplified)
- * Submits a new inspection/audit report - starting with mock success response
+ * SubmitInspection Azure Function - Traditional Model
+ * Accepts inspection data and returns mock success response
  */
-
 module.exports = async function (context, req) {
-    context.log('SubmitInspection function started');
+    context.log('SubmitInspection function triggered');
     
     try {
         // Handle CORS preflight
         if (req.method === 'OPTIONS') {
             context.res = {
-                status: 200,
+                status: 204,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                    'Access-Control-Max-Age': '86400'
                 }
             };
             return;
         }
 
-        // Get the request body
-        let inspectionData;
+        const corsHeaders = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Content-Type': 'application/json'
+        };
+
+        // Parse request body
+        let inspectionData = {};
         try {
-            inspectionData = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+            inspectionData = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
         } catch (parseError) {
+            context.log('JSON parse error:', parseError);
             context.res = {
                 status: 400,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
+                headers: corsHeaders,
                 body: JSON.stringify({
                     success: false,
-                    message: 'Invalid JSON in request body'
+                    error: 'Invalid JSON',
+                    message: 'Request body must be valid JSON'
                 })
             };
             return;
         }
 
-        // Generate a mock inspection ID
-        const inspectionId = uuidv4();
-        const timestamp = new Date().toISOString();
+        // Generate mock response
+        const mockResponse = {
+            inspectionId: `insp-${Date.now()}`,
+            submittedAt: new Date().toISOString(),
+            status: 'Submitted',
+            datacenter: inspectionData.datacenter || 'Unknown',
+            datahall: inspectionData.datahall || 'Unknown',
+            inspector: inspectionData.user_full_name || 'Unknown',
+            findings: inspectionData.findings || [],
+            processingStatus: 'Queued for processing'
+        };
 
-        // Mock success response
         context.res = {
             status: 201,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
+            headers: corsHeaders,
             body: JSON.stringify({
                 success: true,
-                data: {
-                    inspectionId: inspectionId,
-                    timestamp: timestamp,
-                    walkthroughId: inspectionData?.walkthroughId || 'MOCK-001',
-                    datacenter: inspectionData?.datacenter || 'Unknown',
-                    datahall: inspectionData?.datahall || 'Unknown',
-                    state: inspectionData?.state || 'Healthy'
-                },
+                data: mockResponse,
                 message: 'Inspection submitted successfully (mock data)'
             })
         };
@@ -70,16 +71,17 @@ module.exports = async function (context, req) {
 
     } catch (error) {
         context.log('Error in SubmitInspection:', error);
+        
         context.res = {
             status: 500,
             headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 success: false,
-                message: 'Failed to submit inspection',
-                error: error.message
+                error: 'Internal server error',
+                message: 'An error occurred while submitting the inspection'
             })
         };
     }

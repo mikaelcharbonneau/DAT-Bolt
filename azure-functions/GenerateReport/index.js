@@ -1,124 +1,157 @@
-const { v4: uuidv4 } = require('uuid');
-
 /**
- * Azure Function: GenerateReport (Simplified)
- * Generates reports from inspection and incident data - starting with mock data
+ * GenerateReport Azure Function - Traditional Model
+ * Handles both GET (retrieve report by ID) and POST (generate new report) requests
  */
-
 module.exports = async function (context, req) {
-    context.log('GenerateReport function started');
+    context.log('GenerateReport function triggered');
     
     try {
         // Handle CORS preflight
         if (req.method === 'OPTIONS') {
             context.res = {
-                status: 200,
+                status: 204,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-                    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                    'Access-Control-Max-Age': '86400'
                 }
             };
             return;
         }
 
-        // Generate mock report data
-        const reportId = uuidv4();
-        const currentDate = new Date();
-        const sevenDaysAgo = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-        const mockReport = {
-            reportId: reportId,
-            title: 'Weekly Audit Report',
-            generatedAt: currentDate.toISOString(),
-            dateRange: {
-                start: sevenDaysAgo.toISOString(),
-                end: currentDate.toISOString()
-            },
-            summary: {
-                totalInspections: 24,
-                totalIncidents: 3,
-                criticalIssues: 1,
-                warningIssues: 2,
-                healthyInspections: 21
-            },
-            locations: [
-                { datacenter: 'DC1', datahall: 'Hall A', inspections: 8, incidents: 1 },
-                { datacenter: 'DC1', datahall: 'Hall B', inspections: 7, incidents: 0 },
-                { datacenter: 'DC2', datahall: 'Hall A', inspections: 9, incidents: 2 }
-            ],
-            trends: {
-                improvementRate: 15.5,
-                averageResponseTime: '2.3 hours',
-                topIssues: ['Temperature Control', 'Security Access', 'Power Systems']
-            }
+        const corsHeaders = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Content-Type': 'application/json'
         };
 
         if (req.method === 'GET') {
-            // Handle GET request - return existing report
-            const requestedId = req.query.id;
-            if (requestedId) {
-                mockReport.reportId = requestedId;
-                mockReport.title = 'Existing Report';
-            }
-        } else if (req.method === 'POST') {
-            // Handle POST request - generate new report
-            let requestData;
-            try {
-                requestData = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-            } catch (parseError) {
-                context.res = {
-                    status: 400,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    body: JSON.stringify({
-                        success: false,
-                        message: 'Invalid JSON in request body'
-                    })
-                };
-                return;
-            }
+            // Mock GET request - retrieve report by ID
+            const reportId = req.query.id || 'mock-report-id';
+            
+            const mockReport = {
+                id: reportId,
+                title: 'Data Center Health Report - Mock',
+                generatedBy: {
+                    id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+                    name: 'Test User',
+                    email: 'test@hpe.com'
+                },
+                generatedAt: new Date().toISOString(),
+                dateRange: {
+                    start: '2024-01-01T00:00:00Z',
+                    end: '2024-01-31T23:59:59Z'
+                },
+                filters: {
+                    datacenter: 'DC-001',
+                    datahall: 'Hall-A'
+                },
+                status: 'published',
+                totalIncidents: 5,
+                summary: {
+                    totalAudits: 25,
+                    totalIncidents: 5,
+                    healthyAudits: 18,
+                    warningAudits: 5,
+                    criticalAudits: 2,
+                    openIncidents: 2,
+                    resolvedIncidents: 3
+                },
+                analytics: {
+                    healthyPercentage: 72.0,
+                    avgIssuesPerAudit: 1.2,
+                    trends: {
+                        criticalChange: -1,
+                        totalChange: 3
+                    }
+                }
+            };
 
-            if (requestData?.title) {
-                mockReport.title = requestData.title;
-            }
-            if (requestData?.dateRangeStart && requestData?.dateRangeEnd) {
-                mockReport.dateRange = {
-                    start: requestData.dateRangeStart,
-                    end: requestData.dateRangeEnd
-                };
-            }
+            context.res = {
+                status: 200,
+                headers: corsHeaders,
+                body: JSON.stringify({
+                    success: true,
+                    data: mockReport,
+                    message: 'Report retrieved successfully'
+                })
+            };
+            return;
         }
 
+        if (req.method === 'POST') {
+            // Mock POST request - generate new report
+            let requestData = {};
+            try {
+                requestData = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
+            } catch (parseError) {
+                context.log('JSON parse error:', parseError);
+                requestData = {};
+            }
+
+            const mockGeneratedReport = {
+                reportId: `report-${Date.now()}`,
+                generatedAt: new Date().toISOString(),
+                title: requestData.title || 'Generated Report - Mock',
+                summary: {
+                    totalAudits: 25,
+                    totalIncidents: 5,
+                    healthyPercentage: 72.0,
+                    criticalAudits: 2,
+                    openIncidents: 2
+                },
+                analytics: {
+                    performance: {
+                        totalAudits: 25,
+                        healthyPercentage: 72.0,
+                        avgIssuesPerAudit: 1.2
+                    },
+                    trends: {
+                        currentPeriod: { total: 25, critical: 2, warning: 5, healthy: 18 },
+                        previousPeriod: { total: 22, critical: 3, warning: 4, healthy: 15 },
+                        changes: { totalChange: 3, criticalChange: -1 }
+                    }
+                }
+            };
+
+            context.res = {
+                status: 201,
+                headers: corsHeaders,
+                body: JSON.stringify({
+                    success: true,
+                    data: mockGeneratedReport,
+                    message: 'Report generated successfully'
+                })
+            };
+            return;
+        }
+
+        // Method not allowed
         context.res = {
-            status: req.method === 'POST' ? 201 : 200,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
+            status: 405,
+            headers: corsHeaders,
             body: JSON.stringify({
-                success: true,
-                data: mockReport,
-                message: `Report ${req.method === 'POST' ? 'generated' : 'retrieved'} successfully (mock data)`
+                success: false,
+                error: 'Method not allowed',
+                message: 'Only GET and POST methods are supported'
             })
         };
 
-        context.log('GenerateReport completed successfully');
-
     } catch (error) {
-        context.log('Error in GenerateReport:', error);
+        context.log('Error in GenerateReport function:', error);
+        
         context.res = {
             status: 500,
             headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 success: false,
-                message: 'Failed to process report request',
-                error: error.message
+                error: 'Internal server error',
+                message: 'An error occurred while processing the request'
             })
         };
     }
