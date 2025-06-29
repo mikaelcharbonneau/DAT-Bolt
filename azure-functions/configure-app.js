@@ -66,4 +66,4 @@ exec(command, (error, stdout, stderr) => {
   console.log('\n💡 Next steps:');
   console.log('   1. Deploy functions: func azure functionapp publish func-dat-bolt-v2-dev-0d0d0d0a');
   console.log('   2. Test the API endpoints');
-}); 
+});
