@@ -1,8 +1,10 @@
-module.exports = async function (context, req) {
+const { app } = require('@azure/functions');
+
+async function simpleTest(request, context) {
     context.log('SimpleTest function triggered');
     
-    // Try explicit response setting
-    context.res = {
+    // Create response
+    const response = {
         status: 200,
         headers: {
             'Content-Type': 'application/json',
@@ -12,7 +14,7 @@ module.exports = async function (context, req) {
             success: true,
             message: "Azure Functions is working!",
             timestamp: new Date().toISOString(),
-            method: req.method,
+            method: request.method,
             environment: {
                 nodeVersion: process.version,
                 platform: process.platform
@@ -20,5 +22,13 @@ module.exports = async function (context, req) {
         })
     };
     
-    context.log('Response set:', context.res);
-}; 
+    context.log('Response created:', response);
+    return response;
+}
+
+// Register the function
+app.http('SimpleTest', {
+    methods: ['GET', 'POST'],
+    authLevel: 'anonymous',
+    handler: simpleTest
+}); 

@@ -2,13 +2,15 @@
  * GenerateReport Azure Function - Traditional Model
  * Handles both GET (retrieve report by ID) and POST (generate new report) requests
  */
-module.exports = async function (context, req) {
+const { app } = require('@azure/functions');
+
+async function generateReport(request, context) {
     context.log('GenerateReport function triggered');
 
-  try {
-    // Handle CORS preflight
-        if (req.method === 'OPTIONS') {
-            context.res = {
+    try {
+        // Handle CORS preflight
+        if (request.method === 'OPTIONS') {
+            return {
                 status: 204,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
@@ -17,7 +19,6 @@ module.exports = async function (context, req) {
                     'Access-Control-Max-Age': '86400'
                 }
             };
-            return;
         }
 
         const corsHeaders = {
@@ -27,9 +28,10 @@ module.exports = async function (context, req) {
             'Content-Type': 'application/json'
         };
 
-        if (req.method === 'GET') {
+        if (request.method === 'GET') {
             // Mock GET request - retrieve report by ID
-            const reportId = req.query.id || 'mock-report-id';
+            const url = new URL(request.url);
+            const reportId = url.searchParams.get('id') || 'mock-report-id';
             
             const mockReport = {
                 id: reportId,
@@ -69,7 +71,7 @@ module.exports = async function (context, req) {
                 }
             };
 
-            context.res = {
+            return {
                 status: 200,
                 headers: corsHeaders,
                 body: JSON.stringify({
@@ -78,14 +80,14 @@ module.exports = async function (context, req) {
                     message: 'Report retrieved successfully'
                 })
             };
-            return;
         }
 
-        if (req.method === 'POST') {
+        if (request.method === 'POST') {
             // Mock POST request - generate new report
             let requestData = {};
             try {
-                requestData = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
+                const body = await request.text();
+                requestData = body ? JSON.parse(body) : {};
             } catch (parseError) {
                 context.log('JSON parse error:', parseError);
                 requestData = {};
@@ -116,7 +118,7 @@ module.exports = async function (context, req) {
                 }
             };
 
-            context.res = {
+            return {
                 status: 201,
                 headers: corsHeaders,
                 body: JSON.stringify({
@@ -125,11 +127,10 @@ module.exports = async function (context, req) {
                     message: 'Report generated successfully'
                 })
             };
-            return;
         }
 
         // Method not allowed
-        context.res = {
+        return {
             status: 405,
             headers: corsHeaders,
             body: JSON.stringify({
@@ -142,7 +143,7 @@ module.exports = async function (context, req) {
     } catch (error) {
         context.log('Error in GenerateReport function:', error);
         
-        context.res = {
+        return {
             status: 500,
             headers: {
                 'Access-Control-Allow-Origin': '*',
@@ -155,4 +156,11 @@ module.exports = async function (context, req) {
             })
         };
     }
-};
+}
+
+// Register the function
+app.http('GenerateReport', {
+    methods: ['GET', 'POST', 'OPTIONS'],
+    authLevel: 'anonymous',
+    handler: generateReport
+});

@@ -2,13 +2,15 @@
  * GetInspections Azure Function - Traditional Model
  * Returns mock inspection data for testing
  */
-module.exports = async function (context, req) {
+const { app } = require('@azure/functions');
+
+async function getInspections(request, context) {
     context.log('GetInspections function triggered');
     
     try {
         // Handle CORS preflight
-        if (req.method === 'OPTIONS') {
-            context.res = {
+        if (request.method === 'OPTIONS') {
+            return {
                 status: 204,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
@@ -17,7 +19,6 @@ module.exports = async function (context, req) {
                     'Access-Control-Max-Age': '86400'
                 }
             };
-            return;
         }
 
         const corsHeaders = {
@@ -53,7 +54,7 @@ module.exports = async function (context, req) {
             }
         ];
 
-        context.res = {
+        const response = {
             status: 200,
             headers: corsHeaders,
             body: JSON.stringify({
@@ -65,11 +66,12 @@ module.exports = async function (context, req) {
         };
 
         context.log('GetInspections completed successfully');
+        return response;
 
     } catch (error) {
         context.log('Error in GetInspections:', error);
         
-        context.res = {
+        return {
             status: 500,
             headers: {
                 'Access-Control-Allow-Origin': '*',
@@ -82,5 +84,12 @@ module.exports = async function (context, req) {
             })
         };
     }
-};
+}
+
+// Register the function
+app.http('GetInspections', {
+    methods: ['GET', 'OPTIONS'],
+    authLevel: 'anonymous',
+    handler: getInspections
+});
 

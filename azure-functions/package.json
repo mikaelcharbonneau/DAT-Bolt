@@ -10,7 +10,11 @@
     "test:watch": "jest --watch",
     "build": "tsc",
     "deploy": "func azure functionapp publish func-dat-bolt-v2-dev-0d0d0d0a --javascript",
-    "logs": "func azure functionapp logstream func-dat-bolt-v2-dev-0d0d0d0a"
+    "logs": "func azure functionapp logstream func-dat-bolt-v2-dev-0d0d0d0a",
+    "debug": "node debug-functions.js",
+    "debug:local": "AZURE_FUNCTION_URL=http://localhost:7071 node debug-functions.js",
+    "clean": "rm -rf node_modules package-lock.json && npm install",
+    "deploy:debug": "npm run deploy && sleep 30 && npm run debug"
   },
   "dependencies": {
     "@azure/functions": "^4.5.0",
