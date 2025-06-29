@@ -51,11 +51,7 @@ const AuditDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchAuditDetails();
-  }, [id]);
-
-  const fetchAuditDetails = async () => {
+  const fetchAuditDetails = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -68,13 +64,18 @@ const AuditDetails = () => {
 
       if (error) throw error;
       setAudit(data);
-    } catch (error: any) {
-      console.error('Error fetching audit details:', error);
-      setError(error.message);
+    } catch (error) {
+      const err = error as Error;
+      console.error('Error fetching audit details:', err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchAuditDetails();
+  }, [fetchAuditDetails]);
 
   const downloadCSV = () => {
     if (!audit?.ReportData?.racks) return;

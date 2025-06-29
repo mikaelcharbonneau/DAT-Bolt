@@ -2,7 +2,7 @@ const https = require('https');
 const jwt = require('jsonwebtoken');
 
 // Configuration
-const API_BASE_URL = 'https://func-dat-bolt-dev-3d2c8b55.azurewebsites.net/api';
+const API_BASE_URL = 'https://func-dat-bolt-v2-dev-0d0d0d0a.azurewebsites.net/api';
 const TEST_USER = {
   email: 'test@hpe.com',
   password: 'TestPassword123!'
@@ -138,7 +138,11 @@ async function testAPIs() {
     console.log('\n🎉 API Testing Complete!');
     
   } catch (error) {
-    console.error('❌ API Testing failed:', error.message);
+    if (error.code === 'ENETUNREACH' || error.code === 'EAI_AGAIN') {
+      console.error('❌ Network unreachable. This environment may block outbound connections.');
+    } else {
+      console.error('❌ API Testing failed:', error.message);
+    }
   }
 }
 

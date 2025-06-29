@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 
 // Azure Function App configuration
-const functionAppName = 'func-dat-bolt-dev-3d2c8b55';
+const functionAppName = 'func-dat-bolt-v2-dev-0d0d0d0a';
 const resourceGroup = 'rg-dat-bolt-dev';
 
 // Database connection details (avoiding shell escaping issues)
@@ -56,5 +56,5 @@ exec(command, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
   });
   
   console.log('\n💡 Next: Deploy Azure Functions');
-  console.log('   Run: func azure functionapp publish func-dat-bolt-dev-3d2c8b55');
+  console.log('   Run: func azure functionapp publish func-dat-bolt-v2-dev-0d0d0d0a');
 }); 

@@ -26,7 +26,11 @@ async function testConnection() {
     console.log('Current tables in database:', tablesResult.rows[0].table_count);
     
   } catch (error) {
-    console.error('❌ Connection failed:', error.message);
+    if (error.code === 'ENETUNREACH' || error.code === 'EAI_AGAIN') {
+      console.error('❌ Network unreachable. This environment may block outbound connections.');
+    } else {
+      console.error('❌ Connection failed:', error.message);
+    }
   } finally {
     await client.end();
   }

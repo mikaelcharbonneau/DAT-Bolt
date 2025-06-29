@@ -54,7 +54,7 @@ async function debugAuth() {
 
     // Step 3: Test API call with just CORS
     console.log('\n3️⃣ Testing CORS preflight...');
-    const corsResponse = await makeHttpsRequest('https://func-dat-bolt-dev-3d2c8b55.azurewebsites.net/api/getinspections', {
+    const corsResponse = await makeHttpsRequest('https://func-dat-bolt-v2-dev-0d0d0d0a.azurewebsites.net/api/getinspections', {
       method: 'OPTIONS',
       headers: {
         'Origin': 'http://localhost:3000',
@@ -68,7 +68,7 @@ async function debugAuth() {
 
     // Step 4: Test with Authorization header
     console.log('\n4️⃣ Testing API with Authorization header...');
-    const apiResponse = await makeHttpsRequest('https://func-dat-bolt-dev-3d2c8b55.azurewebsites.net/api/getinspections?limit=1', {
+    const apiResponse = await makeHttpsRequest('https://func-dat-bolt-v2-dev-0d0d0d0a.azurewebsites.net/api/getinspections?limit=1', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

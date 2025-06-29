@@ -3,7 +3,8 @@
 // - Removed localStorage handling of walkthrough_id
 // - Displays walkthrough_id after insertion in confirmation page
 
-import React, { useState, useEffect } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useState, useEffect, useCallback } from 'react';
 import { Box } from 'grommet';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronDown, Server, Trash2 } from 'lucide-react';
@@ -26,13 +27,7 @@ const InspectionForm = () => {
   const [userFullName, setUserFullName] = useState('');
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (user) {
-      fetchUserProfile();
-    }
-  }, [user]);
-
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     try {
       if (!navigator.onLine) throw new Error('No internet connection');
       const { data, error: fetchError } = await supabase
@@ -47,7 +42,13 @@ const InspectionForm = () => {
       console.error('Error fetching user profile:', error);
       setError(error.message || 'Failed to fetch user profile');
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user, fetchUserProfile]);
 
   if (!selectedLocation) {
     navigate('/');

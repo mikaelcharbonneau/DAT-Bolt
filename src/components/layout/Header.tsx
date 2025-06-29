@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bell, Home, Clipboard, AlertTriangle, BarChart, User, LogOut } from 'lucide-react';
+import { Bell, Home, Clipboard, AlertTriangle, BarChart, User } from 'lucide-react';
 import HPELogo from '../ui/HPELogo';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
@@ -10,7 +10,7 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { darkMode } = useTheme();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const size = useContext(ResponsiveContext);
 
   const navItems = [
