@@ -2,13 +2,15 @@
  * SubmitInspection Azure Function - Traditional Model
  * Accepts inspection data and returns mock success response
  */
-module.exports = async function (context, req) {
+const { app } = require('@azure/functions');
+
+async function submitInspection(request, context) {
     context.log('SubmitInspection function triggered');
     
     try {
         // Handle CORS preflight
-        if (req.method === 'OPTIONS') {
-            context.res = {
+        if (request.method === 'OPTIONS') {
+            return {
                 status: 204,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
@@ -17,7 +19,6 @@ module.exports = async function (context, req) {
                     'Access-Control-Max-Age': '86400'
                 }
             };
-            return;
         }
 
         const corsHeaders = {
@@ -30,10 +31,11 @@ module.exports = async function (context, req) {
         // Parse request body
         let inspectionData = {};
         try {
-            inspectionData = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
+            const body = await request.text();
+            inspectionData = body ? JSON.parse(body) : {};
         } catch (parseError) {
             context.log('JSON parse error:', parseError);
-            context.res = {
+            return {
                 status: 400,
                 headers: corsHeaders,
                 body: JSON.stringify({
@@ -42,7 +44,6 @@ module.exports = async function (context, req) {
                     message: 'Request body must be valid JSON'
                 })
             };
-            return;
         }
 
         // Generate mock response
@@ -57,7 +58,7 @@ module.exports = async function (context, req) {
             processingStatus: 'Queued for processing'
         };
 
-        context.res = {
+        const response = {
             status: 201,
             headers: corsHeaders,
             body: JSON.stringify({
@@ -68,11 +69,12 @@ module.exports = async function (context, req) {
         };
 
         context.log('SubmitInspection completed successfully');
+        return response;
 
     } catch (error) {
         context.log('Error in SubmitInspection:', error);
         
-        context.res = {
+        return {
             status: 500,
             headers: {
                 'Access-Control-Allow-Origin': '*',
@@ -85,4 +87,11 @@ module.exports = async function (context, req) {
             })
         };
     }
-};
+}
+
+// Register the function
+app.http('SubmitInspection', {
+    methods: ['POST', 'OPTIONS'],
+    authLevel: 'anonymous',
+    handler: submitInspection
+});

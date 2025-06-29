@@ -1,10 +1,28 @@
-module.exports = async function (context, req) {
+const { app } = require('@azure/functions');
+
+async function ultraSimple(request, context) {
     context.log('UltraSimple function started');
     
-    context.res = {
+    const response = {
         status: 200,
-        body: "Hello World from Azure Functions!"
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({
+            success: true,
+            message: "Hello World from Azure Functions!",
+            timestamp: new Date().toISOString()
+        })
     };
     
     context.log('UltraSimple function completed');
-}; 
+    return response;
+}
+
+// Register the function
+app.http('UltraSimple', {
+    methods: ['GET', 'POST'],
+    authLevel: 'anonymous',
+    handler: ultraSimple
+}); 

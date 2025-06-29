@@ -3,13 +3,15 @@
  * Simple test function to verify Azure Functions runtime
  * Last deployment trigger: 2024-12-20
  */
-module.exports = async function (context, req) {
+const { app } = require('@azure/functions');
+
+async function minimalTest(request, context) {
     context.log('MinimalTest function triggered on Premium Plan');
     
     try {
         // Handle CORS preflight
-        if (req.method === 'OPTIONS') {
-            context.res = {
+        if (request.method === 'OPTIONS') {
+            return {
                 status: 204,
                 headers: {
                     'Access-Control-Allow-Origin': '*',
@@ -18,7 +20,6 @@ module.exports = async function (context, req) {
                     'Access-Control-Max-Age': '86400'
                 }
             };
-            return;
         }
 
         const corsHeaders = {
@@ -29,7 +30,7 @@ module.exports = async function (context, req) {
         };
 
         // Simple response
-        context.res = {
+        const response = {
             status: 200,
             headers: corsHeaders,
             body: JSON.stringify({
@@ -42,11 +43,12 @@ module.exports = async function (context, req) {
         };
 
         context.log('MinimalTest completed successfully on Premium Plan');
+        return response;
 
     } catch (error) {
         context.log('Error in MinimalTest:', error);
         
-        context.res = {
+        return {
             status: 500,
             headers: {
                 'Access-Control-Allow-Origin': '*',
@@ -59,4 +61,11 @@ module.exports = async function (context, req) {
             })
         };
     }
-};
+}
+
+// Register the function
+app.http('MinimalTest', {
+    methods: ['GET', 'OPTIONS'],
+    authLevel: 'anonymous',
+    handler: minimalTest
+});
