@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Mail, Phone, Building, Clock, Download, Pencil, Upload } from 'lucide-react';
+import { Mail, Phone, Building, Clock, Pencil, Upload } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { Box, Spinner, Layer, Form, FormField, TextInput, Button } from 'grommet';
@@ -80,8 +80,9 @@ const Profile = () => {
       } else {
         setProfile(data);
       }
-    } catch (error: any) {
-      console.error('Error fetching profile:', error);
+    } catch (error) {
+      const err = error as Error;
+      console.error('Error fetching profile:', err);
       setError('Failed to load profile');
     }
   };
@@ -97,8 +98,9 @@ const Profile = () => {
 
       if (error) throw error;
       setActivities(data || []);
-    } catch (error: any) {
-      console.error('Error fetching activities:', error);
+    } catch (error) {
+      const err = error as Error;
+      console.error('Error fetching activities:', err);
       setError('Failed to load activities');
     }
   };
@@ -130,8 +132,9 @@ const Profile = () => {
         if (createError) throw createError;
         setStats(defaultStats);
       }
-    } catch (error: any) {
-      console.error('Error fetching stats:', error);
+    } catch (error) {
+      const err = error as Error;
+      console.error('Error fetching stats:', err);
       setError('Failed to load statistics');
     }
   };
@@ -153,8 +156,9 @@ const Profile = () => {
       setShowEditModal(false);
       setUpdateSuccess(true);
       setTimeout(() => setUpdateSuccess(false), 3000);
-    } catch (error: any) {
-      console.error('Error updating profile:', error);
+    } catch (error) {
+      const err = error as Error;
+      console.error('Error updating profile:', err);
       setError('Failed to update profile');
     }
   };
@@ -180,8 +184,9 @@ const Profile = () => {
         .getPublicUrl(filePath);
 
       await handleProfileUpdate({ avatar_url: publicUrl });
-    } catch (error: any) {
-      console.error('Error uploading avatar:', error);
+    } catch (error) {
+      const err = error as Error;
+      console.error('Error uploading avatar:', err);
       setError('Failed to upload avatar');
     } finally {
       setUploading(false);

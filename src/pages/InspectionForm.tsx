@@ -3,6 +3,7 @@
 // - Removed localStorage handling of walkthrough_id
 // - Displays walkthrough_id after insertion in confirmation page
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { Box } from 'grommet';
 import { useLocation, useNavigate } from 'react-router-dom';

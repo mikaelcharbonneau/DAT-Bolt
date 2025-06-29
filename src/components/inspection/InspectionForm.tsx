@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Text } from 'grommet';
 import { ChevronDown, ChevronUp, Server } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { rackLocations } from '../../utils/rackLocations';
@@ -102,13 +102,14 @@ export const InspectionForm = ({ selectedLocation, selectedDataHall }: Inspectio
           success: true 
         } 
       });
-    } catch (error: any) {
-      console.error('Error submitting inspection:', error);
-      navigate('/confirmation', { 
-        state: { 
+    } catch (error) {
+      const err = error as Error;
+      console.error('Error submitting inspection:', err);
+      navigate('/confirmation', {
+        state: {
           success: false,
-          error: error.message 
-        } 
+          error: err.message
+        }
       });
     } finally {
       setLoading(false);

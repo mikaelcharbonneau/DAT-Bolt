@@ -4,8 +4,8 @@ import { FormField as FormFieldType } from '../../types';
 
 interface FormFieldProps {
   field: FormFieldType;
-  value: any;
-  onChange: (id: string, value: any) => void;
+  value: unknown;
+  onChange: (id: string, value: unknown) => void;
 }
 
 const FormField = ({ field, value, onChange }: FormFieldProps) => {

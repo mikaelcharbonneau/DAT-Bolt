@@ -21,7 +21,7 @@ interface Report {
   datahall: string;
   status: string;
   total_incidents: number;
-  report_data: any;
+  report_data: unknown;
 }
 
 interface AuditReport {
@@ -46,7 +46,6 @@ const Dashboard = () => {
     active: 0,
     resolved: 0
   });
-  const [loading, setLoading] = useState(true);
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [userFullName, setUserFullName] = useState<string>('');
 
@@ -76,7 +75,6 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      setLoading(true);
       
       // Fetch reports
       const { data: reportData, error: reportError } = await supabase
@@ -119,7 +117,7 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
-      setLoading(false);
+      // no-op
     }
   };
 
