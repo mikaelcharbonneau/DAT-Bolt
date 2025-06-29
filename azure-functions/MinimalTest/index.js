@@ -1,9 +1,9 @@
 /**
- * MinimalTest Azure Function - Traditional Model
+ * MinimalTest Azure Function - Premium Plan
  * Simple test function to verify Azure Functions runtime
  */
 module.exports = async function (context, req) {
-    context.log('MinimalTest function triggered');
+    context.log('MinimalTest function triggered on Premium Plan');
     
     try {
         // Handle CORS preflight
@@ -33,13 +33,14 @@ module.exports = async function (context, req) {
             headers: corsHeaders,
             body: JSON.stringify({
                 success: true,
-                message: 'MinimalTest function is working!',
+                message: 'MinimalTest function is working on Premium Plan!',
                 timestamp: new Date().toISOString(),
-                functionName: 'MinimalTest'
+                functionName: 'MinimalTest',
+                planType: 'Premium EP1'
             })
         };
 
-        context.log('MinimalTest completed successfully');
+        context.log('MinimalTest completed successfully on Premium Plan');
 
     } catch (error) {
         context.log('Error in MinimalTest:', error);
