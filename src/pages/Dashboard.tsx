@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClipboardList, AlertTriangle, CheckCircle, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
@@ -49,14 +49,7 @@ const Dashboard = () => {
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [userFullName, setUserFullName] = useState<string>('');
 
-  useEffect(() => {
-    fetchDashboardData();
-    if (user) {
-      fetchUserProfile();
-    }
-  }, [user]);
-
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -71,9 +64,9 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error fetching user profile:', error);
     }
-  };
+  }, [user]);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       
       // Fetch reports
@@ -119,7 +112,14 @@ const Dashboard = () => {
     } finally {
       // no-op
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user, fetchDashboardData, fetchUserProfile]);
 
   const handleLocationSelect = (location: string) => {
     navigate('/inspection/form', { 

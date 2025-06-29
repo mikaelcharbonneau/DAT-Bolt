@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, AlertTriangle, Clock, MapPin, Server, PenTool as Tool } from 'lucide-react';
 import { format } from 'date-fns';
@@ -29,11 +29,7 @@ const IncidentDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchIncidentDetails();
-  }, [id]);
-
-  const fetchIncidentDetails = async () => {
+  const fetchIncidentDetails = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -53,7 +49,11 @@ const IncidentDetails = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchIncidentDetails();
+  }, [fetchIncidentDetails]);
 
   const formatIncidentId = (incident: Incident) => {
     const walkthrough = `A${incident.walkthrough_id}`;
