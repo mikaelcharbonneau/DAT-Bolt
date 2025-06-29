@@ -1,0 +1,56 @@
+# Example Terraform variables file
+# Copy this file to terraform.tfvars and update with your values
+
+# Environment Configuration
+environment = "dev"
+location    = "East US"
+
+# PostgreSQL Configuration
+postgresql_admin_username = "datboltadmin"
+postgresql_admin_password = "YourSecurePassword123!"  # Change this!
+postgresql_sku_name       = "B_Standard_B1ms"
+
+# Common Tags
+common_tags = {
+  Environment = "dev"
+  Project     = "DAT-Bolt"
+  Owner       = "HPE"
+  ManagedBy   = "Terraform"
+  CostCenter  = "IT"
+}
+
+# Monitoring Configuration
+enable_monitoring = true
+alert_email      = "your-email@company.com"
+
+# Log Analytics
+log_retention_days = 30
+
+# Custom Domain (optional)
+custom_domain = ""  # e.g., "auditportal.yourcompany.com"
+
+# Security Configuration
+allowed_client_ips = []  # Add your IP addresses for development
+enable_private_endpoints = true
+
+# Cost Optimization
+auto_scale_enabled = true
+dev_mode          = true  # Set to false for production
+
+# Azure AD B2C (optional - for authentication)
+azure_ad_b2c_tenant_name = ""  # e.g., "yourcompany.onmicrosoft.com"
+azure_ad_b2c_client_id   = ""
+azure_ad_b2c_client_secret = ""
+
+# Application Gateway
+app_gateway_sku = {
+  name     = "Standard_v2"
+  tier     = "Standard_v2"
+  capacity = 2
+}
+
+# Function App CORS
+function_app_cors_origins = ["*"]  # Restrict in production
+
+# Backup Configuration
+backup_retention_days = 7

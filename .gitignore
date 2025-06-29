@@ -29,3 +29,14 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
+!terraform/terraform.tfvars.example
+
+# Azure Functions
+azure-functions/local.settings.json
