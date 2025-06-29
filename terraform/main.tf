@@ -145,13 +145,13 @@ resource "random_id" "web_storage_suffix" {
   byte_length = 4
 }
 
-# Create NEW Application Service Plan for Functions (v2)
+# Create NEW Application Service Plan for Functions (v2) - Premium Plan
 resource "azurerm_service_plan" "functions_v2" {
   name                = "asp-func-v2-${var.environment}"
   resource_group_name = azurerm_resource_group.dat_bolt.name
   location            = azurerm_resource_group.dat_bolt.location
   os_type             = "Linux"
-  sku_name            = "Y1"  # Consumption plan
+  sku_name            = "EP1"  # Premium plan for better reliability
 
   tags = var.common_tags
 }
@@ -173,6 +173,8 @@ resource "azurerm_linux_function_app" "dat_bolt_v2" {
       allowed_origins = ["*"]  # Will be restricted in production
       support_credentials = false
     }
+    # Premium plan elastic scaling settings  
+    pre_warmed_instance_count = 1
     # Remove problematic settings that cause conflicts
   }
 

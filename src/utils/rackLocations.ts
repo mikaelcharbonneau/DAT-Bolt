@@ -1,6 +1,6 @@
 import { RackMapping } from '../types';
 
-export const rackLocations: RackMapping = {
+export const rackLocations: RackMapping = 
  {
   "Island 1": [
     "X2401", "X2402", "X2403", "X2404", "X2405", "X2406", "X2407", "X2408",
