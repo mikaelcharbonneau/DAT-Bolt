@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import { Mail, Phone, Building, Clock, Pencil, Upload } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -40,17 +40,7 @@ const Profile = () => {
   const [uploading, setUploading] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      Promise.all([
-        fetchUserActivities(),
-        fetchUserStats(),
-        fetchUserProfile()
-      ]).finally(() => setLoading(false));
-    }
-  }, [user]);
-
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -85,9 +75,9 @@ const Profile = () => {
       console.error('Error fetching profile:', err);
       setError('Failed to load profile');
     }
-  };
+  }, [user]);
 
-  const fetchUserActivities = async () => {
+  const fetchUserActivities = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('user_activities')
@@ -103,9 +93,9 @@ const Profile = () => {
       console.error('Error fetching activities:', err);
       setError('Failed to load activities');
     }
-  };
+  }, [user]);
 
-  const fetchUserStats = async () => {
+  const fetchUserStats = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('user_stats')
@@ -137,7 +127,17 @@ const Profile = () => {
       console.error('Error fetching stats:', err);
       setError('Failed to load statistics');
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      Promise.all([
+        fetchUserActivities(),
+        fetchUserStats(),
+        fetchUserProfile()
+      ]).finally(() => setLoading(false));
+    }
+  }, [user, fetchUserActivities, fetchUserStats, fetchUserProfile]);
 
   const handleProfileUpdate = async (values: Partial<UserProfile>) => {
     try {
