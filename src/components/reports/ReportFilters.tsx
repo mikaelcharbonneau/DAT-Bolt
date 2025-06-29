@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, ChevronDown } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 const issueTypes = [
   { id: 'hardware', label: 'Hardware' },
@@ -15,7 +15,7 @@ const locations = [
 ];
 
 interface ReportFiltersProps {
-  onFilterChange: (filters: any) => void;
+  onFilterChange: (filters: Record<string, unknown>) => void;
 }
 
 const ReportFilters = ({ onFilterChange }: ReportFiltersProps) => {
@@ -48,7 +48,7 @@ const ReportFilters = ({ onFilterChange }: ReportFiltersProps) => {
     updateFilters({ severity: e.target.value });
   };
 
-  const updateFilters = (newFilters: any) => {
+  const updateFilters = (newFilters: Record<string, unknown>) => {
     onFilterChange({
       searchText,
       location: selectedLocation,

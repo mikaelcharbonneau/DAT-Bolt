@@ -46,9 +46,10 @@ const IncidentDetails = () => {
 
       if (error) throw error;
       setIncident(data);
-    } catch (error: any) {
-      console.error('Error fetching incident details:', error);
-      setError(error.message);
+    } catch (error) {
+      const err = error as Error;
+      console.error('Error fetching incident details:', err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }

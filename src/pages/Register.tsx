@@ -29,8 +29,9 @@ const Register = () => {
       navigate('/login', { 
         state: { message: 'Registration successful! Please check your email to verify your account.' }
       });
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error) {
+      const err = error as Error;
+      setError(err.message);
     } finally {
       setLoading(false);
     }

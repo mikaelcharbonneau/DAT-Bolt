@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardBody, Box, Text, Meter } from 'grommet';
+import { Card, CardBody, Box, Text } from 'grommet';
 
 interface StatusCardProps {
   title: string;

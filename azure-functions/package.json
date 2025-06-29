@@ -9,8 +9,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "build": "tsc",
-    "deploy": "func azure functionapp publish func-dat-bolt-dev-3d2c8b55 --javascript",
-    "logs": "func azure functionapp logstream func-dat-bolt-dev-3d2c8b55"
+    "deploy": "func azure functionapp publish func-dat-bolt-v2-dev-0d0d0d0a --javascript",
+    "logs": "func azure functionapp logstream func-dat-bolt-v2-dev-0d0d0d0a"
   },
   "dependencies": {
     "@azure/functions": "^4.5.0",

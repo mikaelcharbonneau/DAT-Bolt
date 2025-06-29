@@ -20,7 +20,7 @@ export interface InspectionData {
   comments?: string;
   securityPassed: boolean;
   coolingSystemCheck: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface Report {

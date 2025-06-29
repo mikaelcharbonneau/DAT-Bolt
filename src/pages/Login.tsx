@@ -41,8 +41,9 @@ const Login = () => {
       }
 
       navigate('/');
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during login');
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message || 'An error occurred during login');
     } finally {
       setLoading(false);
     }

@@ -18,7 +18,7 @@ interface Inspection {
   user_full_name: string;
   ReportData: {
     comments?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

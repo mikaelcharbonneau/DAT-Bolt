@@ -68,9 +68,10 @@ const AuditDetails = () => {
 
       if (error) throw error;
       setAudit(data);
-    } catch (error: any) {
-      console.error('Error fetching audit details:', error);
-      setError(error.message);
+    } catch (error) {
+      const err = error as Error;
+      console.error('Error fetching audit details:', err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
