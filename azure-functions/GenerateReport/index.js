@@ -4,9 +4,9 @@
  */
 module.exports = async function (context, req) {
     context.log('GenerateReport function triggered');
-    
-    try {
-        // Handle CORS preflight
+
+  try {
+    // Handle CORS preflight
         if (req.method === 'OPTIONS') {
             context.res = {
                 status: 204,

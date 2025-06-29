@@ -40,3 +40,16 @@ terraform/terraform.tfvars
 
 # Azure Functions
 azure-functions/local.settings.json
+
+# Migration and deployment reports
+migration/schema-deployment-report-*.json
+migration/migration-report-*.json
+migration/node_modules/
+
+# Azure CLI and temporary files
+.azure/
+*.publish
+app-settings.json
+
+# macOS
+.DS_Store
