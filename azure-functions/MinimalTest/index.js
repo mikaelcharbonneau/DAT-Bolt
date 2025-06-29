@@ -1,6 +1,7 @@
 /**
  * MinimalTest Azure Function - Premium Plan
  * Simple test function to verify Azure Functions runtime
+ * Last deployment trigger: 2024-12-20
  */
 module.exports = async function (context, req) {
     context.log('MinimalTest function triggered on Premium Plan');
