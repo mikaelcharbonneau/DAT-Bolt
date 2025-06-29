@@ -145,9 +145,9 @@ resource "random_id" "web_storage_suffix" {
   byte_length = 4
 }
 
-# Create Application Service Plan for Functions
-resource "azurerm_service_plan" "functions" {
-  name                = "asp-func-${var.environment}"
+# Create NEW Application Service Plan for Functions (v2)
+resource "azurerm_service_plan" "functions_v2" {
+  name                = "asp-func-v2-${var.environment}"
   resource_group_name = azurerm_resource_group.dat_bolt.name
   location            = azurerm_resource_group.dat_bolt.location
   os_type             = "Linux"
@@ -156,12 +156,12 @@ resource "azurerm_service_plan" "functions" {
   tags = var.common_tags
 }
 
-# Create Function App
-resource "azurerm_linux_function_app" "dat_bolt" {
-  name                = "func-dat-bolt-${var.environment}-${random_id.function_suffix.hex}"
+# Create NEW Function App (v2) with corrected configuration
+resource "azurerm_linux_function_app" "dat_bolt_v2" {
+  name                = "func-dat-bolt-v2-${var.environment}-${random_id.function_v2_suffix.hex}"
   resource_group_name = azurerm_resource_group.dat_bolt.name
   location            = azurerm_resource_group.dat_bolt.location
-  service_plan_id     = azurerm_service_plan.functions.id
+  service_plan_id     = azurerm_service_plan.functions_v2.id
   storage_account_name       = azurerm_storage_account.functions.name
   storage_account_access_key = azurerm_storage_account.functions.primary_access_key
 
@@ -173,13 +173,16 @@ resource "azurerm_linux_function_app" "dat_bolt" {
       allowed_origins = ["*"]  # Will be restricted in production
       support_credentials = false
     }
+    # Remove problematic settings that cause conflicts
   }
 
   app_settings = {
     "FUNCTIONS_WORKER_RUNTIME" = "node"
-    "WEBSITE_NODE_DEFAULT_VERSION" = "~20"
+    # Removed WEBSITE_NODE_DEFAULT_VERSION - causes conflicts on Linux
+    "NODE_ENV" = "production"
     "AZURE_POSTGRESQL_CONNECTION_STRING" = "@Microsoft.KeyVault(VaultName=${azurerm_key_vault.dat_bolt.name};SecretName=postgresql-connection-string)"
     "JWT_SECRET" = "@Microsoft.KeyVault(VaultName=${azurerm_key_vault.dat_bolt.name};SecretName=jwt-secret)"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.dat_bolt.connection_string
   }
 
   identity {
@@ -193,11 +196,15 @@ resource "random_id" "function_suffix" {
   byte_length = 4
 }
 
-# Grant Function App access to Key Vault
+resource "random_id" "function_v2_suffix" {
+  byte_length = 4
+}
+
+# Grant Function App (V2) access to Key Vault
 resource "azurerm_key_vault_access_policy" "function_app" {
   key_vault_id = azurerm_key_vault.dat_bolt.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_linux_function_app.dat_bolt.identity[0].principal_id
+  object_id    = azurerm_linux_function_app.dat_bolt_v2.identity[0].principal_id
 
   secret_permissions = [
     "Get", "List"

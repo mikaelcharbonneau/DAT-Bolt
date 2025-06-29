@@ -9,21 +9,23 @@ output "resource_group_location" {
   value       = azurerm_resource_group.dat_bolt.location
 }
 
-# Function App Outputs
+# Function App Outputs (Primary - V2)
 output "function_app_name" {
   description = "Name of the Function App"
-  value       = azurerm_linux_function_app.dat_bolt.name
+  value       = azurerm_linux_function_app.dat_bolt_v2.name
 }
 
 output "function_app_url" {
   description = "URL of the Function App"
-  value       = "https://${azurerm_linux_function_app.dat_bolt.default_hostname}"
+  value       = "https://${azurerm_linux_function_app.dat_bolt_v2.default_hostname}"
 }
 
 output "function_app_identity_principal_id" {
   description = "Principal ID of the Function App managed identity"
-  value       = azurerm_linux_function_app.dat_bolt.identity[0].principal_id
+  value       = azurerm_linux_function_app.dat_bolt_v2.identity[0].principal_id
 }
+
+
 
 # PostgreSQL Outputs
 output "postgresql_server_name" {
@@ -135,7 +137,7 @@ output "resource_prefix" {
 # Security outputs
 output "managed_identity_enabled" {
   description = "Whether managed identity is enabled for Function App"
-  value       = length(azurerm_linux_function_app.dat_bolt.identity) > 0
+  value       = length(azurerm_linux_function_app.dat_bolt_v2.identity) > 0
 }
 
 # Cost optimization outputs
@@ -146,5 +148,5 @@ output "postgresql_sku" {
 
 output "function_app_plan_sku" {
   description = "Function App service plan SKU"
-  value       = azurerm_service_plan.functions.sku_name
+  value       = azurerm_service_plan.functions_v2.sku_name
 }
