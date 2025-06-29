@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClipboardList, AlertTriangle, CheckCircle, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
@@ -21,7 +21,7 @@ interface Report {
   datahall: string;
   status: string;
   total_incidents: number;
-  report_data: any;
+  report_data: unknown;
 }
 
 interface AuditReport {
@@ -46,18 +46,10 @@ const Dashboard = () => {
     active: 0,
     resolved: 0
   });
-  const [loading, setLoading] = useState(true);
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [userFullName, setUserFullName] = useState<string>('');
 
-  useEffect(() => {
-    fetchDashboardData();
-    if (user) {
-      fetchUserProfile();
-    }
-  }, [user]);
-
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -72,11 +64,10 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error fetching user profile:', error);
     }
-  };
+  }, [user]);
 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
-      setLoading(true);
       
       // Fetch reports
       const { data: reportData, error: reportError } = await supabase
@@ -119,9 +110,16 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
-      setLoading(false);
+      // no-op
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+    if (user) {
+      fetchUserProfile();
+    }
+  }, [user, fetchDashboardData, fetchUserProfile]);
 
   const handleLocationSelect = (location: string) => {
     navigate('/inspection/form', { 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Search, Filter, FileDown, Calendar, Plus, ArrowLeft, Download } from 'lucide-react';
+import { ArrowLeft, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../context/AuthContext';
@@ -18,7 +18,7 @@ interface Report {
   datahall: string;
   status: string;
   total_incidents: number;
-  report_data: any;
+  report_data: unknown;
 }
 
 interface Incident {
@@ -46,7 +46,6 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [reportNotFound, setReportNotFound] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
     new Date(new Date().setDate(new Date().getDate() - 7)), // Last 7 days
     new Date()
@@ -54,8 +53,6 @@ const Reports = () => {
   const [selectedDatacenter, setSelectedDatacenter] = useState('');
   const [selectedDatahall, setSelectedDatahall] = useState('');
   const [selectedSeverity, setSelectedSeverity] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
 
   const datacenters = [
     'All Datacenters',
@@ -175,9 +172,6 @@ const Reports = () => {
       if (selectedSeverity) {
         query = query.eq('severity', selectedSeverity);
       }
-      if (selectedStatus) {
-        query = query.eq('status', selectedStatus);
-      }
 
       const { data: incidents, error: incidentsError } = await query;
 
@@ -203,7 +197,6 @@ const Reports = () => {
           report_data: {
             filters: {
               severity: selectedSeverity,
-              status: selectedStatus,
               datacenter: selectedDatacenter,
               datahall: selectedDatahall
             },

@@ -3,7 +3,7 @@
 # Azure Function App configuration script
 # Uses environment variables to avoid shell escaping issues
 
-FUNCTION_APP_NAME="func-dat-bolt-dev-3d2c8b55"
+FUNCTION_APP_NAME="func-dat-bolt-v2-dev-0d0d0d0a"
 RESOURCE_GROUP="rg-dat-bolt-dev"
 
 # Set environment variables (avoiding shell history expansion)
