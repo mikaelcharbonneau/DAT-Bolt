@@ -302,3 +302,23 @@ resource "random_password" "jwt_secret" {
   length  = 32
   special = true
 }
+
+# Create Azure Static Web Apps for hosting the React frontend
+resource "azurerm_static_site" "dat_bolt_frontend" {
+  name                = "stapp-dat-bolt-${var.environment}"
+  resource_group_name = azurerm_resource_group.dat_bolt.name
+  location            = "East US 2"  # Static Web Apps limited regions
+  sku_tier            = var.environment == "prod" ? "Standard" : "Free"
+  sku_size            = var.environment == "prod" ? "Standard" : "Free"
+
+  tags = var.common_tags
+}
+
+# Store Azure Static Web Apps deployment token in Key Vault
+resource "azurerm_key_vault_secret" "static_web_app_token" {
+  name         = "static-web-app-deployment-token"
+  value        = azurerm_static_site.dat_bolt_frontend.api_key
+  key_vault_id = azurerm_key_vault.dat_bolt.id
+
+  depends_on = [azurerm_key_vault_access_policy.function_app]
+}

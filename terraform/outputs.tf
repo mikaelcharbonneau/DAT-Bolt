@@ -76,6 +76,23 @@ output "static_web_url" {
   value       = azurerm_storage_account.static_web.primary_web_endpoint
 }
 
+# Static Web App Outputs
+output "static_web_app_name" {
+  description = "Name of the Azure Static Web App"
+  value       = azurerm_static_site.dat_bolt_frontend.name
+}
+
+output "static_web_app_url" {
+  description = "Default URL of the Azure Static Web App"
+  value       = "https://${azurerm_static_site.dat_bolt_frontend.default_host_name}"
+}
+
+output "static_web_app_deployment_token" {
+  description = "Deployment token for Azure Static Web App"
+  value       = azurerm_static_site.dat_bolt_frontend.api_key
+  sensitive   = true
+}
+
 # Virtual Network Outputs
 output "virtual_network_name" {
   description = "Name of the virtual network"

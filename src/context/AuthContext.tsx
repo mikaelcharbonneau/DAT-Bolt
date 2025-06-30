@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { supabase } from '../lib/supabaseClient';
-import type { User } from '@supabase/supabase-js';
+import { azureClient } from '../lib/azureClient';
+import type { User } from '../types';
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -23,48 +23,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setIsAuthenticated(!!session);
-        setUser(session?.user ?? null);
-
-        if (!session && location.pathname !== '/login') {
-          navigate('/login', { replace: true });
+        // Check if user has a token
+        const token = localStorage.getItem('authToken');
+        if (token) {
+          // Verify token with Azure Functions
+          const response = await azureClient.getCurrentUser();
+          if (response.success && response.data) {
+            setIsAuthenticated(true);
+            setUser(response.data);
+          } else {
+            // Token is invalid, remove it
+            localStorage.removeItem('authToken');
+            setIsAuthenticated(false);
+            setUser(null);
+            if (location.pathname !== '/login') {
+              navigate('/login', { replace: true });
+            }
+          }
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
+          if (location.pathname !== '/login') {
+            navigate('/login', { replace: true });
+          }
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
+        setIsAuthenticated(false);
+        setUser(null);
+        if (location.pathname !== '/login') {
+          navigate('/login', { replace: true });
+        }
       } finally {
         setLoading(false);
       }
     };
 
     initAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
-      setUser(session?.user ?? null);
-
-      if (!session && location.pathname !== '/login') {
-        navigate('/login', { replace: true });
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, [navigate, location.pathname]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const response = await azureClient.signIn(email, password);
 
-      if (error) {
-        console.error('Error logging in:', error.message);
+      if (response.success && response.data) {
+        setIsAuthenticated(true);
+        setUser(response.data.user);
+        return true;
+      } else {
+        console.error('Error logging in:', response.error);
         return false;
       }
-
-      return true;
     } catch (error) {
       console.error('Error during login:', error);
       return false;
@@ -75,7 +85,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      await azureClient.signOut();
+      setIsAuthenticated(false);
+      setUser(null);
       navigate('/login', { replace: true });
     } catch (error) {
       console.error('Error during logout:', error);

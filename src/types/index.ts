@@ -11,6 +11,9 @@ export interface Inspection {
   ReportData: InspectionData;
 }
 
+// Alias for backward compatibility and Azure migration
+export interface AuditReport extends Inspection {}
+
 export interface InspectionData {
   datahall: string;
   status: string;
@@ -28,6 +31,19 @@ export interface Report {
   UserEmail: string;
   Timestamp: string;
   ReportData: InspectionData;
+}
+
+export interface Incident {
+  id: string;
+  title: string;
+  description: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  status: 'open' | 'in-progress' | 'resolved' | 'closed';
+  location: string;
+  created_at: string;
+  updated_at: string;
+  assigned_to?: string;
+  resolved_at?: string;
 }
 
 export interface RackMapping {
